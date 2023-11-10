@@ -1,5 +1,7 @@
 #include "main.h"
 
+
+char *find_cmd(const char *argv, const char *env);
 int main(void)
 {
 	char *tokenz[MAX_TOKENZ];
@@ -12,7 +14,8 @@ int main(void)
 		printf("Eshell $ ");
 
 		if (getline(&input, &size, stdin) == -1)
-			break;
+			exit(-1);
+		else
 		{
 			size_t len = strlen(input);
 
@@ -20,19 +23,73 @@ int main(void)
 				input[len - 1] = '\0';
 		}
 
-		int num = 1;
-		char *token = strtok(input, " ");
+		char delim = " :";
+		int num = 0;
+		char *token = strtok(input, delim);
 
-		while (token != NULL)
+		while (token != NULL && num < MAX_TOKENZ - 1)
 		{
 			tokenz[num] = token;
 			printf("%s\n", token);
-			token = strok(NULL, " ");
+			token = strtok(NULL, delim);
 			num++;
 		}
 		tokenz[num] = NULL;
+		char cd = "cd";
 
+		if (num > 0)
+		{
+			if (strcmp(tokenz[0], cd) == 0)
+			{
+				if (num == 2)
+				{
+					if (chdir(tokenz[1]) != 0)
+						perror("chdir");
+				}
+				else if (num == 1)
+				{
+					const char *home = "/home/username";
+
+					if (chdir(home) != 0)
+						perror("chdir");
+				}
+				else
+					perror("chdir");
+			}
+			else if (strcmp(tokenz[0], "exit") == 0)
+			{
+				free(input);
+				exit(0);
+			}
+		}
+		char *path = "PATH";
+		char *cmd = find_cmd(tokenz[0], path);
+
+		if (cmd)
+		{
+			pid_t pid;
+
+			pid = fork();
+			if (pid < 0)
+				perror("fork");
+			else if (pid == 0)
+			{
+				execve(cmd, tokenz, environ);
+				perror("execve");
+				exit(1);
+			}
+			else
+			{
+				int status;
+
+				wait(&status);
+			}
+			free(cmd);
+		}
+		else
+			exit(-1);
 		free(input);
 	}
+	free(input);
 	return (0);
 }
