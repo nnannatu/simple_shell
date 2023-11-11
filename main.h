@@ -14,5 +14,8 @@ int _putchar(char m);
 void _puts(char *word);
 int _strlen(char *m);
 char *find_cmd(const char *argv, const char *env);
+char *_strcpy(char *dest, char *src);
+char *_strcat(char *dest, char *src);
+int _strcmp(char *s1, char *s2);
 
 #endif
