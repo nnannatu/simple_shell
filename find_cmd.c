@@ -15,9 +15,9 @@ char *find_cmd(const char *argv, const char *env)
 
 	while (token != NULL)
 	{
-		output = malloc(strlen(token) + strlen(argv) + 2);
-		if (output == NULL)
+		if ((output = malloc(strlen(token) + strlen(argv) + 2)) == NULL)
 		{
+			perror("malloc");
 			free(env_cpy);
 			return(NULL);
 		}
@@ -31,17 +31,14 @@ char *find_cmd(const char *argv, const char *env)
 			if (access(output, X_OK) == 0)
 			{
 				free(env_cpy);
-				return(strdup(output));
+				return(output);
 			}
 		}
 		else
 		{
 			perror("error");
 			free(output);
-			free(env_cpy);
-			exit(-1);
 		}
-
 		free(output);
 		token = strtok(NULL, delim);
 	}

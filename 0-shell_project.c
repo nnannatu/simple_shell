@@ -14,7 +14,7 @@ int main(void)
 		printf("Eshell $ ");
 
 		if (getline(&input, &size, stdin) == -1)
-			exit(EXIT_FAILURE);
+			return(1);
 		else
 		{
 			size_t len = strlen(input);
@@ -26,16 +26,17 @@ int main(void)
 		char *delim = " ";
 		int num = 0;
 		char *token = strtok(input, delim);
-		printf("am I the one");
+
 		while (token != NULL && num < MAX_TOKENZ - 1)
 		{
 			tokenz[num] = token;
+			printf("%s\n", token);
 			token = strtok(NULL, delim);
 			++num;
 		}
 		tokenz[num] = NULL;
 		char *cd = "cd";
-		printf("am I the one?");
+
 		if (num > 0)
 		{
 			if (strcmp(tokenz[0], "cd") == 0)
@@ -58,10 +59,10 @@ int main(void)
 			else if (strcmp(tokenz[0], "exit") == 0)
 			{
 				free(input);
-				exit(EXIT_SUCCESS);
+				exit(0);
 			}
 		}
-		printf("am I the one?");
+
 		const char *path = "PATH";
 		char *cmd = find_cmd(tokenz[0], path);
 
@@ -76,7 +77,6 @@ int main(void)
 			{
 				execve(cmd, tokenz, __environ);
 				perror("execve");
-				exit(EXIT_FAILURE);
 			}
 			else
 			{
@@ -87,7 +87,7 @@ int main(void)
 			free(cmd);
 		}
 		else
-			exit(EXIT_FAILURE);
+			return (1);
 		free(input);
 	}
 	return (0);
