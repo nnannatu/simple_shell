@@ -37,6 +37,8 @@ char *find_cmd(const char *argv, const char *env)
 		else
 		{
 			perror("error");
+			free(output);
+			free(env_cpy);
 			exit(-1);
 		}
 
