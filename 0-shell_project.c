@@ -7,13 +7,19 @@ int main(void)
 	char *tokenz[MAX_TOKENZ];
 	extern char **environ;	
 	char *cmd = NULL;
-
+	char *delim;
 	while (1)
 	{
+
+		int num = 0;
+		char *token;
 		char *input = NULL;
+		int status;
+		size_t len;
 		size_t size;
 		const char *home = NULL;
-		printf("Eshell $ ");
+		if (isatty(STDIN_FILENO))
+			printf("shell $ ");
 
 		if (getline(&input, &size, stdin) == -1)
 		{	perror("getline");
@@ -21,15 +27,15 @@ int main(void)
 		}
 		else
 		{
-			size_t len = strlen(input);
+			len = strlen(input);
 
 			if (input[len - 1] == '\n')
 				input[len - 1] = '\0';
 		}
 
-		char *delim = " ";
-		int num = 0;
-		char *token = strtok(input, delim);
+		delim = " ";
+		num = 0;
+		token = strtok(input, delim);
 
 		while (token != NULL && num < MAX_TOKENZ - 1)
 		{
@@ -66,7 +72,7 @@ int main(void)
 				if (chdir(tokenz[1]) != 0)
 				{
 					perror("chdir");
-					exit;
+					exit(1);
 				}
 			}
 		}
@@ -92,20 +98,17 @@ int main(void)
 			}
 			else if (pid == 0)
 			{
-				char *cmd = find_cmd(tokenz[0]);
+				cmd = find_cmd(tokenz[0]);
 				if (cmd != NULL)
 				{
 					execve(cmd, tokenz, environ);
 					perror("execve");
+					free(cmd);
 					exit(1);
 				}
 			}
 			else
-			{
-				int status;
-
 				wait(&status);
-			}
 		}
 		free(input);
 	}

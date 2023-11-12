@@ -2,8 +2,10 @@
 
 char *find_cmd(const char *tokenz)
 {
-	char *env = getenv("PATH");
+	char *env = _getenv("PATH");
 	char *env_cpy = NULL;
+	char *token = NULL;
+	char *output = NULL;
 
 	if ((env_cpy = strdup(env)) == NULL)
 	{
@@ -11,8 +13,8 @@ char *find_cmd(const char *tokenz)
 		return (NULL);
 	}
 
-	char *token = strtok(env_cpy, ":");
-	char *output = NULL;
+	token = strtok(env_cpy, ":");
+	output = NULL;
 
 	while (token != NULL)
 	{
