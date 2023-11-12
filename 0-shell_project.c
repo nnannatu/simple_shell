@@ -5,12 +5,12 @@ char *find_cmd(const char *argv, const char *env);
 int main(void)
 {
 	char *tokenz[MAX_TOKENZ];
-
+	extern char **environ;
 	while (1)
 	{
 		char *input = NULL;
 		size_t size;
-
+		const char *home = NULL;
 		printf("Eshell $ ");
 
 		if (getline(&input, &size, stdin) == -1)
@@ -32,51 +32,71 @@ int main(void)
 			tokenz[num] = token;
 			printf("%s\n", token);
 			token = strtok(NULL, delim);
-			++num;
+			num++;
 		}
 		tokenz[num] = NULL;
-		char *cd = "cd";
 
-		if (num > 0)
+		if (num < 2)
 		{
-			if (strcmp(tokenz[0], "cd") == 0)
+			write(2, "No command\n", 11);
+		}
+		if (strcmp(tokenz[1], "cd") == 0)
+		{
+			if (num == 2)
 			{
-				if (num == 2)
+				home = _getenv("HOME");
+				if (home == NULL)
 				{
-					if (chdir(tokenz[1]) != 0)
-						perror("chdir");
+					perror("getenv");
+					return (1);
 				}
-				else if (num == 1)
+				if (chdir(home) != 0)
 				{
-					const char *home = "/home/username";
-
-					if (chdir(home) != 0)
-						perror("chdir");
-				}
-				else
 					perror("chdir");
+					return (1);
+				}
 			}
-			else if (strcmp(tokenz[0], "exit") == 0)
+			else if (num == 3)
 			{
-				free(input);
-				exit(0);
+				if (chdir(tokenz[2]) != 0)
+				{
+					perror("chdir");
+					return (1);
+				}
 			}
+			else
+			{
+				write(2, "No command\n", 11);
+				return (1);
+			}	
+		}
+		else if (strcmp(tokenz[1], "exit") == 0)
+		{
+			if (num == 2)
+				exit(0);
+			else
+				write(2, "No command\n", 11);
 		}
 
-		const char *path = "PATH";
-		char *cmd = find_cmd(tokenz[0], path);
-
-		if (cmd)
+		else
 		{
 			pid_t pid;
 
 			pid = fork();
-			if (pid < 0)
+			if (pid == -1)
+			{
+				free(cmd);
 				perror("fork");
+				return(-1);
+			}
 			else if (pid == 0)
 			{
-				execve(cmd, tokenz, __environ);
-				perror("execve");
+				char *cmd = find_cmd(tokenz);
+				if (cmd != NULL)
+				{
+					execve(cmd, tokenz, environ);
+					perror("execve");
+				}
 			}
 			else
 			{
