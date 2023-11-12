@@ -46,31 +46,31 @@ int main(void)
 		}
 		if (strcmp(tokenz[0], "cd") == 0)
 		{
-			if (num == 1)
+			if (tokenz[1] == NULL)
 			{
-				home = getenv("HOME");
+				home = _getenv("HOME");
 				if (home == NULL)
 				{
 					perror("getenv");
 					return (1);
 				}
+
 				if (chdir(home) != 0)
 				{
 					perror("chdir");
 					return (1);
 				}
 			}
-			else if (num == 2)
+			else
 			{
-				if (chdir(tokenz[2]) != 0)
+				if (chdir(tokenz[1]) != 0)
 				{
 					perror("chdir");
-					continue;
+					exit;
 				}
 			}
-			else
-				write(2, "Too many arguments\n", 19);
 		}
+
 		else if (strcmp(tokenz[0], "exit") == 0)
 		{
 			if (num == 1)
