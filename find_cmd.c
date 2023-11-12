@@ -2,7 +2,7 @@
 
 char *find_cmd(const char *tokenz)
 {
-	char *env = _getenv("PATH");
+	char *env = getenv("PATH");
 	char *env_cpy = NULL;
 
 	if ((env_cpy = strdup(env)) == NULL)
