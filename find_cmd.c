@@ -1,47 +1,45 @@
 #include "main.h"
 
-char *find_cmd(const char *argv, const char *env)
+char *find_cmd(const char *tokenz)
 {
-	if (env == NULL)
-		return (NULL);
-	char *env_cpy;
+	char *env = _getenv("PATH");
+	char *env_cpy = NULL;
 
 	if ((env_cpy = strdup(env)) == NULL)
+	{
+		perror("strdup");
 		return (NULL);
+	}
 
-	char *delim = " :";
-	char *token = strtok(env_cpy, delim);
+	char *token = strtok(env_cpy, ":");
 	char *output = NULL;
 
 	while (token != NULL)
 	{
-		if ((output = malloc(strlen(token) + strlen(argv) + 2)) == NULL)
+		if ((output = malloc(MAX_SIZE)) == NULL)
 		{
 			perror("malloc");
 			free(env_cpy);
-			return(NULL);
+			return (NULL);
 		}
 
-		if (strcmp(token, "/usr/local/bin") == 0 || strcmp(token, "/usr/bin") == 0 || strcmp(token, "/bin") == 0)
-		{
-			strcpy(output, token);
+		strcpy(output, token);
+
+		if (output[_strlen(output) - 1] != '/')
 			strcat(output, "/");
-			strcat(output, argv);
 
-			if (access(output, X_OK) == 0)
-			{
-				free(env_cpy);
-				return(output);
-			}
-		}
-		else
+		strcat(output, tokenz);
+
+		if (access(output, X_OK) == 0)
 		{
-			perror("error");
-			free(output);
+			free(env_cpy);
+			return (output);
 		}
+
 		free(output);
-		token = strtok(NULL, delim);
+		token = strtok(NULL, ":");
 	}
+
 	free(env_cpy);
-	return(NULL);
+	return (NULL);
 }
