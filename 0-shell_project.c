@@ -1,11 +1,13 @@
 #include "main.h"
 
 
-char *find_cmd(const char *argv, const char *env);
+char *find_cmd(const char *tokenz);
 int main(void)
 {
 	char *tokenz[MAX_TOKENZ];
-	extern char **environ;
+	extern char **environ;	
+	char *cmd = NULL;
+
 	while (1)
 	{
 		char *input = NULL;
@@ -14,7 +16,9 @@ int main(void)
 		printf("Eshell $ ");
 
 		if (getline(&input, &size, stdin) == -1)
-			return(1);
+		{	perror("getline");
+			return (1);
+		}
 		else
 		{
 			size_t len = strlen(input);
@@ -30,21 +34,21 @@ int main(void)
 		while (token != NULL && num < MAX_TOKENZ - 1)
 		{
 			tokenz[num] = token;
-			printf("%s\n", token);
 			token = strtok(NULL, delim);
 			num++;
 		}
 		tokenz[num] = NULL;
 
-		if (num < 2)
+		if (num < 1)
 		{
 			write(2, "No command\n", 11);
+			continue;
 		}
-		if (strcmp(tokenz[1], "cd") == 0)
+		if (strcmp(tokenz[0], "cd") == 0)
 		{
-			if (num == 2)
+			if (num == 1)
 			{
-				home = _getenv("HOME");
+				home = getenv("HOME");
 				if (home == NULL)
 				{
 					perror("getenv");
@@ -56,26 +60,23 @@ int main(void)
 					return (1);
 				}
 			}
-			else if (num == 3)
+			else if (num == 2)
 			{
 				if (chdir(tokenz[2]) != 0)
 				{
 					perror("chdir");
-					return (1);
+					continue;
 				}
 			}
 			else
-			{
-				write(2, "No command\n", 11);
-				return (1);
-			}	
+				write(2, "Too many arguments\n", 19);
 		}
-		else if (strcmp(tokenz[1], "exit") == 0)
+		else if (strcmp(tokenz[0], "exit") == 0)
 		{
-			if (num == 2)
+			if (num == 1)
 				exit(0);
 			else
-				write(2, "No command\n", 11);
+				write(2, "Too many arguments\n", 19);
 		}
 
 		else
@@ -87,15 +88,16 @@ int main(void)
 			{
 				free(cmd);
 				perror("fork");
-				return(-1);
+				return (1);
 			}
 			else if (pid == 0)
 			{
-				char *cmd = find_cmd(tokenz);
+				char *cmd = find_cmd(tokenz[0]);
 				if (cmd != NULL)
 				{
 					execve(cmd, tokenz, environ);
 					perror("execve");
+					exit(1);
 				}
 			}
 			else
@@ -104,10 +106,7 @@ int main(void)
 
 				wait(&status);
 			}
-			free(cmd);
 		}
-		else
-			return (1);
 		free(input);
 	}
 	return (0);
