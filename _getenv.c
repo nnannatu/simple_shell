@@ -1,11 +1,19 @@
 #include "main.h"
 
+/**
+ *_getenv - function to source for
+ *the external variable.
+ *
+ *@name: this is the name of the variable.
+ *Return: NULL on success.
+ */
+
 char *_getenv(const char *name)
 {
-	extern char **environ;
 	int i = 0;
 	char **env;
 	char *env_cpy;
+
 	if (name == NULL || environ == NULL)
 		return (NULL);
 

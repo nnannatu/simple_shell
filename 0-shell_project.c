@@ -2,8 +2,11 @@
 
 char *find_cmd(const char *tokenz);
 
-
-
+/**
+ *main - a custom simple shell project.
+ *no argument passed.
+ *Return: zero on success.
+ */
 
 
 int main(void)

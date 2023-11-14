@@ -1,5 +1,16 @@
 #include "main.h"
 
+/**
+ *find_cmd -  A funcion to get the path
+ *of the command passed.
+ *
+ *@tokenz: an array of tokenized commands.
+ *Return: a pointer to the path of the command.
+ */
+
+
+
+
 char *find_cmd(const char *tokenz);
 
 char *find_cmd(const char *tokenz)
