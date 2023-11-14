@@ -18,5 +18,7 @@ char *find_cmd(const char *argv, const char *env);
 char *_strcpy(char *dest, char *src);
 char *_strcat(char *dest, char *src);
 int _strcmp(char *s1, char *s2);
+char *find_cmd(const char *tokenz);
+char *_getenv(const char *name);
 
 #endif
