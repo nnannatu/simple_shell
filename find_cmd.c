@@ -1,5 +1,7 @@
 #include "main.h"
 
+char *find_cmd(const char *tokenz);
+
 char *find_cmd(const char *tokenz)
 {
 	char *env = _getenv("PATH");
@@ -7,7 +9,9 @@ char *find_cmd(const char *tokenz)
 	char *token = NULL;
 	char *output = NULL;
 
-	if ((env_cpy = strdup(env)) == NULL)
+	env_cpy = strdup(env);
+
+	if (env_cpy == NULL)
 	{
 		perror("strdup");
 		return (NULL);
@@ -18,7 +22,9 @@ char *find_cmd(const char *tokenz)
 
 	while (token != NULL)
 	{
-		if ((output = malloc(MAX_SIZE)) == NULL)
+		output = malloc(MAX_SIZE);
+
+		if (output == NULL)
 		{
 			perror("malloc");
 			free(env_cpy);
@@ -34,14 +40,12 @@ char *find_cmd(const char *tokenz)
 
 		if (access(output, X_OK) == 0)
 		{
-			free(env_cpy);
 			return (output);
 		}
 
 		free(output);
 		token = strtok(NULL, ":");
 	}
-
 	free(env_cpy);
 	return (NULL);
 }

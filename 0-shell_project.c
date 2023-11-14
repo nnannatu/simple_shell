@@ -1,25 +1,30 @@
 #include "main.h"
 
-
 char *find_cmd(const char *tokenz);
+
+
+
+
+
 int main(void)
 {
 	char *tokenz[MAX_TOKENZ];
-	extern char **environ;	
 	char *cmd = NULL;
 	char *delim;
+	int num = 0;
+	char *token;
+	char *input = NULL;
+	int status;
+	size_t len;
+	size_t size;
+	const char *home;
+	char *prompt = "shell $ ";
+
 	while (1)
 	{
 
-		int num = 0;
-		char *token;
-		char *input = NULL;
-		int status;
-		size_t len;
-		size_t size;
-		const char *home = NULL;
 		if (isatty(STDIN_FILENO))
-			printf("shell $ ");
+			write(1, prompt, 9);
 
 		if (getline(&input, &size, stdin) == -1)
 		{	perror("getline");
@@ -77,12 +82,18 @@ int main(void)
 			}
 		}
 
-		else if (strcmp(tokenz[0], "exit") == 0)
+		else if ((strcmp(tokenz[0], "exit") == 0) || (strcmp(tokenz[0], "EOF") == 0))
 		{
 			if (num == 1)
-				exit(0);
+			{
+				free(input);
+				exit(status);
+			}
 			else
-				write(2, "Too many arguments\n", 19);
+			{
+				perror("exit");
+				exit(status);
+			}
 		}
 
 		else
@@ -92,7 +103,6 @@ int main(void)
 			pid = fork();
 			if (pid == -1)
 			{
-				free(cmd);
 				perror("fork");
 				return (1);
 			}
@@ -106,11 +116,20 @@ int main(void)
 					free(cmd);
 					exit(1);
 				}
+				free(cmd);
 			}
 			else
-				wait(&status);
+			{
+				waitpid(pid, &status, 0);
+
+				if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+				{
+					perror("wait");
+					return (1);
+				}
+			}
 		}
-		free(input);
 	}
+	free(input);
 	return (0);
 }
