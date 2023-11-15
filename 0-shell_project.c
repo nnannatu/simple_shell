@@ -31,7 +31,7 @@ int main(void)
 
 		if (getline(&input, &size, stdin) == -1)
 		{	perror("getline");
-			return (1);
+			return (-1);
 		}
 		else
 		{
@@ -66,13 +66,13 @@ int main(void)
 				if (home == NULL)
 				{
 					perror("getenv");
-					return (1);
+					return (-1);
 				}
 
 				if (chdir(home) != 0)
 				{
 					perror("chdir");
-					return (1);
+					return (-1);
 				}
 			}
 			else
@@ -90,7 +90,7 @@ int main(void)
 			if (num == 1)
 			{
 				free(input);
-				exit(status);
+				exit(EXIT_SUCCESS);
 			}
 			else
 			{
@@ -107,7 +107,7 @@ int main(void)
 			if (pid == -1)
 			{
 				perror("fork");
-				return (1);
+				return (-1);
 			}
 			else if (pid == 0)
 			{
@@ -128,7 +128,7 @@ int main(void)
 				if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
 				{
 					perror("wait");
-					return (1);
+					return (-1);
 				}
 			}
 		}
