@@ -6,11 +6,11 @@
  *
  * Return: String length
  */
-int _strlen(char *m)
+int _strlen(const char *str)
 {
 	int n = 0;
 
-	for (; *m != '\0'; m++)
+	for (; *str != '\0'; str++)
 	{
 		n++;
 	}
