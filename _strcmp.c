@@ -1,24 +1,21 @@
 #include "main.h"
 /**
  *_strcmp -  compares two strings
- *@s1: A pointer to an char that will be updated
- *@s2: A pointer to an char that will be updated
+ *@str_one: A pointer to an char that will be updated
+ *@str_two: A pointer to an char that will be updated
  *Return: dest
  */
 
-int _strcmp(char *s1, char *s2)
+int _strcmp(const char *str_one, const char *str_two)
 
 {
 
-	char *str_one = s1; /*Declaring pointer*/
-	char *str_two = s2;
-
 	/*WHILE*/
-	while (*str_one != '\0' && *str_two != '\0' &&  *str_one == *str_two)
+	while (*str_one && *str_two &&  *str_one == *str_two)
 	{
 		str_one++; /*Add string one and string two*/
 		str_two++;
 	}
 
-	return (*str_one - *str_two);
+	return ((int)(*str_one - *str_two));
 }

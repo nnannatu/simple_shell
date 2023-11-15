@@ -2,15 +2,15 @@
 
 /**
  * _strlen - Returns the length of a string
- * @m: String to count
+ * @str: String to count
  *
  * Return: String length
  */
-int _strlen(char *m)
+size_t _strlen(const char *str)
 {
-	int n = 0;
+	size_t n = 0;
 
-	for (; *m != '\0'; m++)
+	for (; *str != '\0'; str++)
 	{
 		n++;
 	}
