@@ -9,8 +9,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#define MAX_INPUT_SIZE 1024
-#define MAX_TOKENZ 100
+#define MAX_TOKENZ 1024
 
 extern char **environ;
 int _putchar(char m);

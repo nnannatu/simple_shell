@@ -20,6 +20,7 @@ int main(void)
 	int status;
 	size_t len;
 	size_t size;
+
 	int is_path __attribute__((unused));
 	const char *home;
 	char *prompt = "shell $ ";
@@ -81,12 +82,13 @@ int main(void)
 				if (chdir(tokenz[1]) != 0)
 				{
 					perror("chdir");
-					exit(1);
+					exit(EXIT_FAILURE);
 				}
 			}
 		}
 
-		else if ((_strcmp(tokenz[0], "exit") == 0) || (_strcmp(tokenz[0], "EOF") == 0))
+		else if ((_strcmp(tokenz[0], "exit") == 0)
+		|| (_strcmp(tokenz[0], "EOF") == 0))
 		{
 			if (num == 1)
 			{
@@ -96,7 +98,7 @@ int main(void)
 			else
 			{
 				perror("exit");
-				exit(status);
+				exit(EXIT_FAILURE);
 			}
 		}
 

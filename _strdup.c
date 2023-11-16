@@ -2,7 +2,7 @@
 
 
 /**
- * our_strdup - duplicating string
+ * _strdup - duplicating string
  * @str: string to be duplicated
  * Return: string
  */

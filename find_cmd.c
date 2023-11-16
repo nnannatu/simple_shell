@@ -33,7 +33,7 @@ char *find_cmd(char *tokenz)
 
 	while (token != NULL)
 	{
-		output = malloc(MAX_SIZE);
+		output = malloc(MAX_TOKENZ);
 
 		if (output == NULL)
 		{
