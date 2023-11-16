@@ -11,16 +11,16 @@
 
 
 
-char *find_cmd(const char *tokenz);
+char *find_cmd(char *tokenz);
 
-char *find_cmd(const char *tokenz)
+char *find_cmd(char *tokenz)
 {
 	char *env = _getenv("PATH");
 	char *env_cpy = NULL;
 	char *token = NULL;
 	char *output = NULL;
 
-	env_cpy = strdup(env);
+	env_cpy = _strdup(env);
 
 	if (env_cpy == NULL)
 	{
@@ -42,15 +42,16 @@ char *find_cmd(const char *tokenz)
 			return (NULL);
 		}
 
-		strcpy(output, token);
+		_strcpy(output, token);
 
 		if (output[_strlen(output) - 1] != '/')
-			strcat(output, "/");
+			_strcat(output, "/");
 
-		strcat(output, tokenz);
+		_strcat(output, tokenz);
 
 		if (access(output, X_OK) == 0)
 		{
+			free(env_cpy);
 			return (output);
 		}
 

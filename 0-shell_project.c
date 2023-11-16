@@ -1,6 +1,6 @@
 #include "main.h"
 
-char *find_cmd(const char *tokenz);
+char *find_cmd(char *tokenz);
 
 /**
  *main - a custom simple shell project.
@@ -20,6 +20,7 @@ int main(void)
 	int status;
 	size_t len;
 	size_t size;
+	int is_path __attribute__((unused));
 	const char *home;
 	char *prompt = "shell $ ";
 
@@ -29,13 +30,13 @@ int main(void)
 		if (isatty(STDIN_FILENO))
 			write(1, prompt, 9);
 
-		if (getline(&input, &size, stdin) == -1)
+		if (_getline(&input, &size, stdin) == -1)
 		{	perror("getline");
 			return (-1);
 		}
 		else
 		{
-			len = strlen(input);
+			len = _strlen(input);
 
 			if (input[len - 1] == '\n')
 				input[len - 1] = '\0';
@@ -58,7 +59,7 @@ int main(void)
 			write(2, "No command\n", 11);
 			continue;
 		}
-		if (strcmp(tokenz[0], "cd") == 0)
+		if (_strcmp(tokenz[0], "cd") == 0)
 		{
 			if (tokenz[1] == NULL)
 			{
@@ -85,7 +86,7 @@ int main(void)
 			}
 		}
 
-		else if ((strcmp(tokenz[0], "exit") == 0) || (strcmp(tokenz[0], "EOF") == 0))
+		else if ((_strcmp(tokenz[0], "exit") == 0) || (_strcmp(tokenz[0], "EOF") == 0))
 		{
 			if (num == 1)
 			{
@@ -111,7 +112,17 @@ int main(void)
 			}
 			else if (pid == 0)
 			{
-				cmd = find_cmd(tokenz[0]);
+				if (tokenz[0][0] == '/')
+				{
+					cmd = tokenz[0];
+					is_path = 1;
+				}
+				else
+				{
+					cmd = find_cmd(tokenz[0]);
+					is_path = 0;
+				}
+
 				if (cmd != NULL)
 				{
 					execve(cmd, tokenz, environ);
@@ -134,5 +145,9 @@ int main(void)
 		}
 	}
 	free(input);
+
+	if (isatty(STDIN_FILENO) == 1)
+		write(1, "\n", 1);
+
 	return (0);
 }
