@@ -14,12 +14,16 @@
 extern char **environ;
 int _putchar(char m);
 void _puts(char *word);
-int _strlen(char *m);
-char *find_cmd(const char *tokenz);
+size_t _strlen(const char *str);
+char *_strdup(const char *str);
 char *_strcpy(char *dest, char *src);
 char *_strcat(char *dest, char *src);
-int _strcmp(char *s1, char *s2);
-char *find_cmd(const char *tokenz);
+int _strcmp(const char *str_one, const char *str_two);
+char *find_cmd(char *tokenz);
 char *_getenv(const char *name);
+int _strncmp(const char *str1, const char *str2, size_t n);
+ssize_t _getline(char **line, size_t *len, FILE *stream);
+char *_strtok(char *str, const char *delim);
+const char *_strchr(const char *s, char c);
 
 #endif
