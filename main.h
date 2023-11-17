@@ -27,5 +27,6 @@ char *_strtok(char *str, const char *delim);
 const char *_strchr(const char *s, char c);
 int _unsetenv(const char *var);
 int _setenv(const char *var, const char *value);
+void sig_handler(int signal);
 
 #endif

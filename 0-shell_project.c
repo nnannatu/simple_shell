@@ -23,17 +23,27 @@ int main(void)
 
 	int is_path __attribute__((unused));
 	const char *home;
-	char *prompt = "shell $ ";
+	char *prompt = "$ ";
+
+	signal(SIGINT, sig_handler);
 
 	while (1)
 	{
 
 		if (isatty(STDIN_FILENO))
-			write(1, prompt, 9);
+		{
+			if (write(1, prompt, _strlen(prompt)) == -1)
+			{
+				perror("write");
+				exit(1);
+			}
+		}
+
+		fflush(stdout);
 
 		if (_getline(&input, &size, stdin) == -1)
 		{	perror("getline");
-			return (-1);
+			return (1);
 		}
 		else
 		{
@@ -43,7 +53,7 @@ int main(void)
 				input[len - 1] = '\0';
 		}
 
-		delim = " ";
+		delim = " \n\t\r\a";
 		num = 0;
 		token = strtok(input, delim);
 
