@@ -147,11 +147,9 @@ int main(void)
 				}
 			}
 		}
+		if (isatty(STDIN_FILENO) == 1)
+		write(1, "\n", 1);
 	}
 	free(input);
-
-	if (isatty(STDIN_FILENO) == 1)
-		write(1, "\n", 1);
-
 	return (0);
 }
