@@ -1,6 +1,17 @@
 #include "main.h"
 
 /**
+ * signal_handler - handles signals for ctrl c
+ * @signal: signal number
+ * Return: nothing
+ */
+void sig_handler(int signal)
+{
+	(void)signal;
+	exit(0);
+}
+
+/**
  *find_cmd -  A funcion to get the path
  *of the command passed.
  *
