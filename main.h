@@ -25,5 +25,7 @@ int _strncmp(const char *str1, const char *str2, size_t n);
 ssize_t _getline(char **line, size_t *len, FILE *stream);
 char *_strtok(char *str, const char *delim);
 const char *_strchr(const char *s, char c);
+int _unsetenv(const char *var);
+int _setenv(const char *var, const char *value);
 
 #endif

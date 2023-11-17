@@ -102,6 +102,28 @@ int main(void)
 			}
 		}
 
+		if (_strcmp(tokenz[0], "setenv") == 0)
+		{
+			if (num == 3)
+			{
+				if (_setenv(tokenz[1], tokenz[2]) == -1)
+				write(2, "Error setting variable\n", 23);
+			}
+			else
+				write(2, "Invalid number of arguments\n", 28);
+
+		}
+		else if (_strcmp(tokenz[0], "unsetenv") == 0)
+		{
+			if (num == 2)
+			{
+				if (_unsetenv(tokenz[1]) == -1)
+				write(2, "Error unsetting variable\n", 25);
+			}
+			else
+				write(2, "Invalid number of arguments\n", 28);
+		}
+
 		else
 		{
 			pid_t pid;
