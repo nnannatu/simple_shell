@@ -5,10 +5,10 @@
  * @signal: signal number
  * Return: nothing
  */
-void sig_handler(int signal)
+void sig_handler(int signo)
 {
-	(void)signal;
-	exit(0);
+	if (signo == SIGINT)
+		write(1, "\n", 1);
 }
 
 /**
@@ -31,6 +31,11 @@ char *find_cmd(char *tokenz)
 	char *token = NULL;
 	char *output = NULL;
 
+	if (env == NULL)
+	{
+		perror("_getenv");
+		return (NULL);
+	}
 	env_cpy = _strdup(env);
 
 	if (env_cpy == NULL)
@@ -40,12 +45,9 @@ char *find_cmd(char *tokenz)
 	}
 
 	token = strtok(env_cpy, ":");
-	output = NULL;
-
 	while (token != NULL)
 	{
-		output = malloc(MAX_TOKENZ);
-
+		output = malloc(_strlen(token) + _strlen(tokenz) + 2);
 		if (output == NULL)
 		{
 			perror("malloc");
@@ -54,10 +56,7 @@ char *find_cmd(char *tokenz)
 		}
 
 		_strcpy(output, token);
-
-		if (output[_strlen(output) - 1] != '/')
-			_strcat(output, "/");
-
+		_strcat(output, "/");
 		_strcat(output, tokenz);
 
 		if (access(output, X_OK) == 0)
