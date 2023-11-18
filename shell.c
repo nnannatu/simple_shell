@@ -13,38 +13,24 @@ int main(void)
 {
 	char *tokenz[MAX_TOKENZ];
 	char *cmd = NULL;
-	char *delim;
 	int num = 0;
 	char *token;
 	char *input = NULL;
-	int status;
 	size_t len;
 	size_t size;
-
-	const char *home;
-	char *prompt = "$ ";
 
 	signal(SIGINT, sig_handler);
 
 	while (1)
 	{
-
 		if (isatty(STDIN_FILENO))
-		{
-			if (write(1, prompt, 2) == -1)
-			{
-				perror("write");
-				exit(1);
-			}
-		}
+			write(1, "$ ", 2);
 
-		fflush(stdout);
-
-		if (_getline(&input, &size, stdin) == EOF)
+		if (_getline(&input, &size, stdin) == EOF || input == NULL)
 		{
 			perror("getline");
 			free(input);
-			return(1);
+			return (1);
 		}
 
 
@@ -60,14 +46,14 @@ int main(void)
 		}
 
 
-		delim = " \n\t\r\a";
+		/* Tokenization */
 		num = 0;
-		token = strtok(input, delim);
+		token = strtok(input, " ");
 
 		while (token != NULL && num < MAX_TOKENZ - 1)
 		{
 			tokenz[num] = token;
-			token = strtok(NULL, delim);
+			token = strtok(NULL, " ");
 			num++;
 		}
 		tokenz[num] = NULL;
@@ -78,77 +64,56 @@ int main(void)
 			continue;
 		}
 
-		else if (_strcmp(tokenz[0], "cd") == 0)
+		if (is_builtin(tokenz[0]))
 		{
-			if (tokenz[1] == NULL)
+			/* Execute built-in command */
+			int result = (*builtin_func[0])(tokenz);
+			if (result == 0)
 			{
-				home = _getenv("HOME");
-				if (home == NULL)
-				{
-					perror("getenv");
-					return (-1);
-				}
-
-				if (chdir(home) != 0)
-				{
-					perror("chdir");
-					return (-1);
-				}
-			}
-			else
-			{
-				if (chdir(tokenz[1]) != 0)
-				{
-					perror("chdir");
-					exit(EXIT_FAILURE);
-				}
+				free(input);
+				exit(0);
 			}
 		}
-
 
 		else
 		{
-			pid_t pid;
+			/* Execute external command */
+			if (tokenz[0][0] == '/')
+				cmd = tokenz[0];
+			else
+				cmd = find_cmd(tokenz[0]);
 
-			pid = fork();
-			if (pid == -1)
+			if (cmd != NULL)
 			{
-				perror("fork");
-				return (-1);
-			}
-			else if (pid == 0)
-			{
-				if (tokenz[0][0] == '/')
-				{
-					cmd = tokenz[0];
-				}
-				else
-				{
-					cmd = find_cmd(tokenz[0]);
-				}
+				pid_t pid;
 
-				if (cmd != NULL)
+				pid = fork();
+				if (pid == -1)
 				{
-					execve(cmd, tokenz, environ);
+					perror("fork");
+					return (1);
+				}
+				else if (pid == 0)
+				{
+					/* Child process */
+					execve(cmd, tokenz, NULL);
 					perror("execve");
-					free(cmd);
+					free(input);
 					exit(1);
 				}
-				free(cmd);
-			}
-			else
-			{
-				waitpid(pid, &status, 0);
 
-				if (WIFEXITED(status) && WEXITSTATUS(status) != 0)
+				else
 				{
-					perror("wait");
-					return (-1);
+					/* Parent process */
+					waitpid(pid, NULL, 0);
 				}
 			}
+			else 
+			{
+				/* Command not found */
+				write(2, "Command not found\n", 18);
+			}
 		}
-		if (isatty(STDIN_FILENO) == 1)
-		write(1, "\n", 1);
 	}
 	free(input);
 	return (0);
